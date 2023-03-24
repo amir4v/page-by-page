@@ -1,4 +1,4 @@
-poppler*
+poppler-23.01.0/*
 media/*
 media/temp/*
 *pyc*
