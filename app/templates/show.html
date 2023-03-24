@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF</title>
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+</head>
+<body>
+    {{ pdf_name }} - {{ page_number }}
+    
+    <hr>
+    
+    {% if owner %}
+    
+    <button id="prev" onclick="prev()">prev</button>( <span id="page_number">{{ page_number }}</span> )<button id="next" onclick="next()">next</button>
+    <br>
+    <input type="number" id="page_number_input" value="{{ page_number }}">
+    <button id="get_page_button" onclick="get_page()">get</button>
+    
+    <hr>
+    {% endif %}
+    
+    <img id="page_img" src="{{ page_path }}" width="100%" height="100%">
+
+    <script>
+        const roomName = {{ pdf_pk }};
+
+
+        function prev(){
+            current = parseInt(document.querySelector('#page_number_input').value);
+            if (current === 1){
+                return false;
+            }
+            pn = current -1;
+            document.querySelector('#page_number_input').value = pn;
+            document.querySelector('#page_number').innerHTML = pn;
+            document.querySelector('#get_page_button').click();
+        }
+        function next(){
+            pn = parseInt(document.querySelector('#page_number_input').value) +1;
+            document.querySelector('#page_number_input').value = pn;
+            document.querySelector('#page_number').innerHTML = pn;
+            document.querySelector('#get_page_button').click();
+        }
+
+
+        const chatSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/room/'
+            + roomName
+            + '/'
+        );
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            document.querySelector('#page_img').src = data.message;
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+
+        function get_page(){
+            const pgnum = document.querySelector('#page_number_input');
+            const message = pgnum.value;
+            chatSocket.send(JSON.stringify({
+                'pk': {{ pdf_pk }},
+                'page_number': message
+            }));
+        }
+
+        document.querySelector('#get_page_button').onclick = function(e) {
+            const pgnum = document.querySelector('#page_number_input');
+            const message = pgnum.value;
+            chatSocket.send(JSON.stringify({
+                'pk': {{ pdf_pk }},
+                'page_number': message
+            }));
+        };
+    </script>
+</body>
+</html>

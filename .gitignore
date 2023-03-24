@@ -1,0 +1,6 @@
+poppler*
+media/*
+media/temp/*
+*pyc*
+migrations
+db.sqlite
