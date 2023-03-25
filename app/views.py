@@ -56,7 +56,8 @@ def upload(request):
 
 
 def show(request, pk):
-    pdf_page = PDF.objects.get(pk=pk).page_set.filter(page_number=1)[0]
+    pdf = PDF.objects.get(pk=pk)
+    pdf_page = pdf.page_set.filter(page_number=pdf.current_page)[0]
     
     if str(request.user) == 'AnonymousUser':
         owner = False

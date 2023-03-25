@@ -48,6 +48,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
         
         pdf = PDF.objects.get(pk=pk)
+        pdf.current_page = page_number
+        pdf.save()
         message = '/media/' + pdf.page_set.filter(page_number=page_number)[0].path
         # message = await sync_to_async(get_path(self, text_data_json, pk, page_number)
         # await get_path(self, text_data_json, pk, page_number)
